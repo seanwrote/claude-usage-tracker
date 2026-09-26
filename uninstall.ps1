@@ -1,6 +1,6 @@
 # Removes Claude Usage Tracker: stops it, deletes its two shortcuts, and
-# optionally deletes this folder and the extra Claude Code profile logins.
-# Never touches your main Claude Code login (~/.claude) or the Python packages.
+# optionally deletes this folder and the extra account login folders it made.
+# Never touches your main logins (~/.claude, ~/.codex) or the Python packages.
 
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 $name = 'Claude Usage Tracker'
@@ -15,16 +15,21 @@ foreach ($lnk in @((Join-Path $programs "$name.lnk"), (Join-Path $programs "Star
     if (Test-Path $lnk) { Remove-Item $lnk -Force; Write-Host "Removed $lnk" }
 }
 
-# Extra profile logins listed in settings.json (the default ~/.claude is never offered).
+# Extra account login folders listed in settings.json. Only ~/.claude-* and
+# ~/.codex-* folders are offered; the main ~/.claude and ~/.codex never are.
 $settingsFile = Join-Path $here 'settings.json'
 if (Test-Path $settingsFile) {
     $settings = Get-Content $settingsFile -Raw | ConvertFrom-Json
-    foreach ($p in $settings.profiles) {
-        if (-not $p.config_dir) { continue }
-        $dir = $p.config_dir -replace '^~', $HOME
-        if (-not (Test-Path $dir)) { continue }
-        $answer = Read-Host "Also delete the '$($p.name)' Claude Code login folder $dir ? [y/N]"
-        if ($answer -eq 'y') { Remove-Item $dir -Recurse -Force; Write-Host "Deleted $dir" }
+    $entries = @($settings.accounts) + @($settings.profiles) | Where-Object { $_ }
+    foreach ($a in $entries) {
+        $dir = if ($a.dir) { $a.dir } else { $a.config_dir }
+        if (-not $dir) { continue }
+        $full = [IO.Path]::GetFullPath(($dir -replace '^~', $HOME))
+        $leaf = Split-Path $full -Leaf
+        $isOurs = ((Split-Path $full -Parent) -eq $HOME) -and ($leaf -like '.claude-*' -or $leaf -like '.codex-*')
+        if (-not $isOurs -or -not (Test-Path $full)) { continue }
+        $answer = Read-Host "Also sign out '$($a.name)' by deleting its login folder $full ? [y/N]"
+        if ($answer -eq 'y') { Remove-Item $full -Recurse -Force; Write-Host "Deleted $full" }
     }
 }
 
@@ -36,3 +41,4 @@ if ($answer -eq 'y') {
 } else {
     Write-Host "Uninstalled. The folder $here was kept."
 }
+Read-Host 'Press Enter to close'

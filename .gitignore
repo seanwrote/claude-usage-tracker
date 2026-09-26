@@ -1,4 +1,5 @@
 settings.json
 tracker.log
 icon.ico
+*.lnk
 __pycache__/
