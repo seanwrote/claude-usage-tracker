@@ -14,6 +14,22 @@ A small Windows tray icon that shows the 5-hour and weekly usage limits for any 
 
 One Python file ([tracker.pyw](tracker.pyw)), using `pystray` and `Pillow`.
 
+## Screenshots
+
+<p>
+  <img src="docs/popup.png" alt="Popup with Work, Personal and ChatGPT accounts" width="330">
+</p>
+
+The tray icon shows the 5-hour % with 5-hour and weekly bars. A bar turns amber when you're using that limit faster than time is passing, and a grey `!` means the account needs signing in.
+
+<img src="docs/tray-icons.png" alt="Tray icon at 62%, at 12%, and signed out" width="290">
+
+| Add account | Manage accounts |
+|---|---|
+| <img src="docs/add-account.png" alt="Add account dialog" width="300"> | <img src="docs/manage-accounts.png" alt="Manage accounts dialog" width="300"> |
+
+*Screenshots use demo accounts and numbers.*
+
 ## Where the numbers come from
 
 | Account | Source | Login it reads |
@@ -88,3 +104,7 @@ This stops the tracker and removes both shortcuts. It then asks whether to delet
 - Both usage sources are unofficial and may change without notice.
 - It only reads CLI logins. The Claude desktop app stores its sign-in separately.
 - Inspired by [Usage Monitor for Claude](https://github.com/jens-duttke/usage-monitor-for-claude) and [Usage Monitor for Codex](https://github.com/hybrid2102/usage-monitor-for-codex). Not affiliated with Anthropic or OpenAI.
+
+## License
+
+[MIT](LICENSE)
